@@ -15,24 +15,23 @@ import {
 } from "@ionic/react";
 import React from "react";
 import { Link } from "react-router-dom";
-import { register } from "../services/AuthService";
+import { useAuth } from "../services/AuthContext"; // Correction : importation du hook
 
 const RegisterPage: React.FC = () => {
-  // Ici nous allons gérer l'état du formulaire (nom, email, mot de passe)
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
-    const [password, setPassword] = React.useState("");
-    const history = useIonRouter();
+  const [password, setPassword] = React.useState("");
+  const history = useIonRouter();
+  const auth = useAuth(); // Correction : utilisation du hook
 
   const doRegister = async () => {
-    console.log("Tentative d'inscription avec :", name, email, password);
-      // Logique d'inscription à l'API à implémenter dans les prochaines étapes
-        try {
-          await register(name, email, password);
-          history.push("/tabs/home"); // Redirection vers la page d'accueil après succès
-        } catch (error) {
-          alert("Échec de l'inscription. Veuillez réessayer.");
-        }
+    // La fonction register du contexte retourne un boolean
+    const success = auth.register(name, email, password);
+    if (success) {
+      history.push("/tabs/home"); // Redirection vers la page d'accueil après succès
+    } else {
+      alert("Échec de l'inscription. Veuillez réessayer.");
+    }
   };
 
   return (

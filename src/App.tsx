@@ -1,52 +1,57 @@
-import { Redirect, Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
-import { IonReactRouter } from '@ionic/react-router';
-import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel } from '@ionic/react';
-import { triangle, ellipse } from 'ionicons/icons';
+import { Redirect, Route } from "react-router-dom";
+import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
+import { IonReactRouter } from "@ionic/react-router";
+import {
+  IonTabs,
+  IonTabBar,
+  IonTabButton,
+  IonIcon,
+  IonLabel,
+} from "@ionic/react";
+import { triangle, ellipse } from "ionicons/icons";
 
 /* Importation des pages (créées dans les prochaines étapes) */
-import HomePage from './pages/HomePage';
-import ExercicesPage from './pages/ExercicesPage';
-import ProfilePage from './pages/ProfilePage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
+import HomePage from "./pages/HomePage";
+import ExercicesPage from "./pages/ExercicesPage";
+import ProfilePage from "./pages/ProfilePage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+
+// Importez l'AuthProvider et le hook useAuth
+import { AuthProvider, useAuth } from "./services/AuthContext";
 
 /* Fichiers CSS */
-import '@ionic/react/css/core.css';
-import '@ionic/react/css/normalize.css';
-import '@ionic/react/css/structure.css';
-import '@ionic/react/css/typography.css';
-import '@ionic/react/css/padding.css';
-import '@ionic/react/css/float-elements.css';
-import '@ionic/react/css/text-alignment.css';
-import '@ionic/react/css/text-transformation.css';
-import '@ionic/react/css/flex-utils.css';
-import '@ionic/react/css/display.css';
-import './theme/variables.css';
+import "@ionic/react/css/core.css";
+import "@ionic/react/css/normalize.css";
+import "@ionic/react/css/structure.css";
+import "@ionic/react/css/typography.css";
+import "@ionic/react/css/padding.css";
+import "@ionic/react/css/float-elements.css";
+import "@ionic/react/css/text-alignment.css";
+import "@ionic/react/css/text-transformation.css";
+import "@ionic/react/css/flex-utils.css";
+import "@ionic/react/css/display.css";
+import "./theme/variables.css";
 
 setupIonicReact();
 
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        {/* Routes d'authentification sans la barre d'onglets */}
-        <Route exact path="/login" component={LoginPage} />
-        <Route exact path="/register" component={RegisterPage} />
+const AppRoutes: React.FC = () => {
+  const { isAuthenticated } = useAuth();
 
-        {/* Routes de l'application avec la barre d'onglets */}
-        <Route path="/tabs">
+  return (
+    <IonRouterOutlet>
+      {/* Routes d'authentification publiques */}
+      <Route exact path="/login" component={LoginPage} />
+      <Route exact path="/register" component={RegisterPage} />
+
+      {/* Routes protégées avec les onglets */}
+      <Route path="/tabs">
+        {isAuthenticated ? (
           <IonTabs>
             <IonRouterOutlet>
-              <Route exact path="/tabs/home">
-                <HomePage />
-              </Route>
-              <Route exact path="/tabs/exercices">
-                <ExercicesPage />
-              </Route>
-              <Route path="/tabs/profile">
-                <ProfilePage />
-              </Route>
+              <Route exact path="/tabs/home" component={HomePage} />
+              <Route exact path="/tabs/exercices" component={ExercicesPage} />
+              <Route path="/tabs/profile" component={ProfilePage} />
               {/* Redirection par défaut après l'authentification */}
               <Route exact path="/tabs">
                 <Redirect to="/tabs/home" />
@@ -67,14 +72,29 @@ const App: React.FC = () => (
               </IonTabButton>
             </IonTabBar>
           </IonTabs>
-        </Route>
-
-        {/* Redirection si l'utilisateur arrive sur la racine de l'app */}
-        <Route exact path="/">
+        ) : (
           <Redirect to="/login" />
-        </Route>
+        )}
+      </Route>
 
-      </IonRouterOutlet>
+      {/* Redirection par défaut si l'utilisateur arrive sur la racine */}
+      <Route exact path="/">
+        {isAuthenticated ? (
+          <Redirect to="/tabs/home" />
+        ) : (
+          <Redirect to="/login" />
+        )}
+      </Route>
+    </IonRouterOutlet>
+  );
+};
+
+const App: React.FC = () => (
+  <IonApp>
+    <IonReactRouter>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
     </IonReactRouter>
   </IonApp>
 );
