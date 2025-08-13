@@ -32,6 +32,7 @@ import "@ionic/react/css/text-transformation.css";
 import "@ionic/react/css/flex-utils.css";
 import "@ionic/react/css/display.css";
 import "./theme/variables.css";
+import ExerciseDetailPage from "./pages/ExerciseDetailPage";
 
 setupIonicReact();
 
@@ -85,6 +86,8 @@ const AppRoutes: React.FC = () => {
           <Redirect to="/login" />
         )}
       </Route>
+      {/* Route pour la page de détail de l'exercice (hors des onglets) */}
+      <Route path="/exercices/:id" component={ExerciseDetailPage} />
     </IonRouterOutlet>
   );
 };
