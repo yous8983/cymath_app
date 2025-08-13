@@ -11,19 +11,28 @@ import {
   IonButton,
   IonButtons,
   IonBackButton,
+  useIonRouter,
 } from "@ionic/react";
 import React from "react";
 import { Link } from "react-router-dom";
+import { register } from "../services/AuthService";
 
 const RegisterPage: React.FC = () => {
   // Ici nous allons gérer l'état du formulaire (nom, email, mot de passe)
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+    const [password, setPassword] = React.useState("");
+    const history = useIonRouter();
 
   const doRegister = async () => {
     console.log("Tentative d'inscription avec :", name, email, password);
-    // Logique d'inscription à l'API à implémenter dans les prochaines étapes
+      // Logique d'inscription à l'API à implémenter dans les prochaines étapes
+        try {
+          await register(name, email, password);
+          history.push("/tabs/home"); // Redirection vers la page d'accueil après succès
+        } catch (error) {
+          alert("Échec de l'inscription. Veuillez réessayer.");
+        }
   };
 
   return (

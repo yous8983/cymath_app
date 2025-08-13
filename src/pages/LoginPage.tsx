@@ -15,15 +15,24 @@ import {
 } from "@ionic/react";
 import React from "react";
 import { Link } from "react-router-dom";
+import { login } from "../services/AuthService";
 
 const LoginPage: React.FC = () => {
   // Ici nous allons gérer l'état du formulaire (email, mot de passe)
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
-
+    const history = useIonRouter();
+    
   const doLogin = async () => {
-    console.log("Tentative de connexion avec :", email, password);
-    // Logique de connexion à l'API à implémenter dans les prochaines étapes
+    // console.log("Tentative de connexion avec :", email, password);
+      // Logique de connexion à l'API à implémenter dans les prochaines étapes
+       try {
+         await login(email, password);
+         history.push("/tabs/home"); // Redirection vers la page d'accueil après succès
+       } catch (error) {
+         // Gérer les erreurs (par exemple, afficher un message d'erreur à l'utilisateur)
+         alert("Échec de la connexion. Veuillez vérifier vos identifiants.");
+       }
   };
 
   return (
